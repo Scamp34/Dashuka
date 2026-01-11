@@ -8,7 +8,9 @@ export const basePath = '/Dashuka';
 // Prepend base path to any relative URL
 // WHY: Generic URL builder for any route
 export function withBase(path: string): string {
-  return basePath + path;
+  // WHY: Handle both "/images/..." and "images/..." formats
+  const normalizedPath = path.startsWith('/') ? path : '/' + path;
+  return basePath + normalizedPath;
 }
 
 // Remove base path from a full URL

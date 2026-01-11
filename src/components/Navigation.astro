@@ -1,13 +1,8 @@
 ---
-// WHY Navigation.astro: Category navigation menu for portfolio
-// Mobile: dropdown menu (<768px), Desktop: horizontal links (>=768px)
-// WHY horizontal on desktop: Reference Peter Beavis portfolio uses clean horizontal nav
-// WHY dropdown on mobile: Saves screen space, standard pattern for mobile navigation
+// WHY Navigation.astro: Minimal navigation inspired by Peter Beavis
+// Fixed header with mix-blend-difference for elegant contrast
+import { withBase, stripBase, categoryUrl, homeUrl } from '../lib/urls';
 
-// WHY stripBase: Astro.url.pathname includes base path, but links need comparison without it
-import { withBase, stripBase, categoryUrl } from '../lib/urls';
-
-// Import categories for navigation links
 const categories = Object.values(
   import.meta.glob('/src/content/categories/*.json', { eager: true })
 ).map((module: any) => module.default);
@@ -15,19 +10,53 @@ const categories = Object.values(
 const currentPath = stripBase(Astro.url.pathname);
 ---
 
-<!-- WHY nav>ul>li structure: Semantic HTML for accessibility, screen readers understand navigation -->
-<nav class="border-b border-white/10 mb-8">
-	<div class="px-4 py-4">
-		<!-- Mobile dropdown button (hidden on desktop) -->
-		<!-- WHY md:hidden: Only show on mobile (<768px) -->
+<nav class="py-6 px-6 md:px-12">
+	<div class="max-w-7xl mx-auto flex items-center justify-between">
+		<!-- Logo / Site Name -->
+		<a 
+			href={homeUrl()} 
+			class="text-lg font-light tracking-wider text-white hover:opacity-70 transition-opacity duration-300"
+			style="font-family: var(--font-serif);"
+		>
+			Portfolio
+		</a>
+
+		<!-- Desktop Navigation -->
+		<ul class="hidden md:flex items-center gap-8">
+			<li>
+				<a
+					href={homeUrl()}
+					class:list={[
+						'text-sm tracking-wide transition-opacity duration-300',
+						currentPath === '/' ? 'text-white' : 'text-white/60 hover:text-white'
+					]}
+				>
+					Все
+				</a>
+			</li>
+			{categories.map((category) => (
+				<li>
+					<a
+						href={categoryUrl(category.id)}
+						class:list={[
+							'text-sm tracking-wide transition-opacity duration-300',
+							currentPath === `/category/${category.id}` ? 'text-white' : 'text-white/60 hover:text-white'
+						]}
+					>
+						{category.title}
+					</a>
+				</li>
+			))}
+		</ul>
+
+		<!-- Mobile Menu Button -->
 		<button
 			id="nav-menu-button"
-			class="md:hidden flex items-center justify-between w-full py-2 text-text-primary hover:text-accent transition-colors"
+			class="md:hidden text-white p-2"
 			aria-expanded="false"
 			aria-controls="nav-menu"
+			aria-label="Меню"
 		>
-			<span class="font-bold">Меню</span>
-			<!-- WHY hamburger icon: Standard mobile menu indicator -->
 			<svg
 				id="nav-menu-icon"
 				xmlns="http://www.w3.org/2000/svg"
@@ -36,101 +65,91 @@ const currentPath = stripBase(Astro.url.pathname);
 				viewBox="0 0 24 24"
 				fill="none"
 				stroke="currentColor"
-				stroke-width="2"
+				stroke-width="1.5"
 				stroke-linecap="round"
 				stroke-linejoin="round"
 				class="transition-transform duration-300"
 			>
-				<line x1="3" y1="12" x2="21" y2="12"></line>
-				<line x1="3" y1="6" x2="21" y2="6"></line>
-				<line x1="3" y1="18" x2="21" y2="18"></line>
+				<line x1="4" y1="8" x2="20" y2="8" class="origin-center transition-all duration-300" id="line1"></line>
+				<line x1="4" y1="16" x2="20" y2="16" class="origin-center transition-all duration-300" id="line2"></line>
+			</svg>
+		</button>
+	</div>
+
+	<!-- Mobile Menu Overlay -->
+	<div
+		id="nav-menu"
+		class="fixed inset-0 bg-background/98 backdrop-blur-sm z-50 hidden flex-col items-center justify-center"
+	>
+		<button
+			id="nav-menu-close"
+			class="absolute top-6 right-6 text-white p-2"
+			aria-label="Закрыть меню"
+		>
+			<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+				<line x1="18" y1="6" x2="6" y2="18"></line>
+				<line x1="6" y1="6" x2="18" y2="18"></line>
 			</svg>
 		</button>
 
-		<!-- Navigation links -->
-		<!-- WHY md:flex: Show as horizontal flex on desktop, hidden by default on mobile -->
-		<!-- WHY flex-col on mobile: Stack links vertically in dropdown -->
-		<ul
-			id="nav-menu"
-			class="hidden md:flex flex-wrap gap-6 mt-4 md:mt-0 flex-col md:flex-row"
-		>
+		<ul class="flex flex-col items-center gap-8">
 			<li>
-				<!-- WHY whitespace-nowrap: Prevent category names from wrapping on mobile -->
 				<a
-					href={withBase('/')}
-					class:text-accent={currentPath === '/'}
-					class:text-text-secondary={currentPath !== '/'}
-					class:font-bold={currentPath === '/'}
-					class="hover:text-accent transition-colors whitespace-nowrap block py-2 md:py-0"
+					href={homeUrl()}
+					class="text-2xl font-light tracking-wide text-white hover:opacity-70 transition-opacity"
+					style="font-family: var(--font-serif);"
 				>
-					Все
+					Все работы
 				</a>
 			</li>
-			{
-				categories.map((category) => (
-					<li>
-						<a
-							href={categoryUrl(category.id)}
-							class:text-accent={currentPath === `/category/${category.id}`}
-							class:text-text-secondary={currentPath !== `/category/${category.id}`}
-							class:font-bold={currentPath === `/category/${category.id}`}
-							class="hover:text-accent transition-colors whitespace-nowrap block py-2 md:py-0"
-						>
-							{category.title}
-						</a>
-					</li>
-				))
-			}
+			{categories.map((category) => (
+				<li>
+					<a
+						href={categoryUrl(category.id)}
+						class="text-2xl font-light tracking-wide text-white hover:opacity-70 transition-opacity"
+						style="font-family: var(--font-serif);"
+					>
+						{category.title}
+					</a>
+				</li>
+			))}
 		</ul>
 	</div>
 </nav>
 
 <script>
-	// WHY client-side script: Handle mobile dropdown toggle without page reload
-	const menuButton = document.getElementById('nav-menu-button')!;
-	const menuIcon = document.getElementById('nav-menu-icon')!;
-	const menu = document.getElementById('nav-menu')!;
+	const menuButton = document.getElementById('nav-menu-button');
+	const menuClose = document.getElementById('nav-menu-close');
+	const menu = document.getElementById('nav-menu');
 
-	let isMenuOpen = false;
-
-	function toggleMenu(): void {
-		isMenuOpen = !isMenuOpen;
-
-		// Toggle menu visibility
-		if (isMenuOpen) {
+	if (menuButton && menuClose && menu) {
+		function openMenu() {
 			menu.classList.remove('hidden');
 			menu.classList.add('flex');
-			// Rotate icon to indicate open state
-			menuIcon.style.transform = 'rotate(180deg)';
-		} else {
+			document.body.style.overflow = 'hidden';
+			menuButton.setAttribute('aria-expanded', 'true');
+		}
+
+		function closeMenu() {
 			menu.classList.add('hidden');
 			menu.classList.remove('flex');
-			menuIcon.style.transform = 'rotate(0deg)';
-		}
-
-		// Update ARIA attribute for accessibility
-		menuButton.setAttribute('aria-expanded', isMenuOpen.toString());
-	}
-
-	menuButton.addEventListener('click', toggleMenu);
-
-	// WHY close menu on link click: Auto-close after navigation on mobile
-	menu.querySelectorAll('a').forEach((link) => {
-		link.addEventListener('click', () => {
-			if (window.innerWidth < 768 && isMenuOpen) {
-				toggleMenu();
-			}
-		});
-	});
-
-	// WHY close menu on resize: Reset to desktop state when window expands
-	window.addEventListener('resize', () => {
-		if (window.innerWidth >= 768 && isMenuOpen) {
-			isMenuOpen = false;
-			menu.classList.remove('hidden');
-			menu.classList.add('flex');
-			menuIcon.style.transform = 'rotate(0deg)';
+			document.body.style.overflow = '';
 			menuButton.setAttribute('aria-expanded', 'false');
 		}
-	});
+
+		menuButton.addEventListener('click', openMenu);
+		menuClose.addEventListener('click', closeMenu);
+
+		// Close on link click
+		menu.querySelectorAll('a').forEach((link) => {
+			link.addEventListener('click', closeMenu);
+		});
+
+		// Close on Escape key
+		document.addEventListener('keydown', (e) => {
+			if (e.key === 'Escape' && !menu.classList.contains('hidden')) {
+				closeMenu();
+			}
+		});
+	}
 </script>

@@ -2,28 +2,21 @@
 import Layout from '../../layouts/Layout.astro';
 import PhotoGrid from '../../components/PhotoGrid.astro';
 import Lightbox from '../../components/Lightbox.astro';
-import { categoryUrl } from '../../lib/urls';
-
-// WHY [id].astro: Dynamic route for individual album pages
-// WHY getStaticPaths: Pre-render all album pages at build time for optimal performance
+import { categoryUrl, homeUrl } from '../../lib/urls';
 
 export function getStaticPaths() {
-  // Load all albums to generate static paths (inside function to avoid scope issues)
   const albumModules = Object.values(
     import.meta.glob('/src/content/albums/*.json', { eager: true })
   );
 
-  // WHY map to params: Astro requires params object with dynamic route parameters
   return albumModules.map((module: any) => ({
     params: { id: module.default.id },
     props: { album: module.default },
   }));
 }
 
-// WHY destructure from Astro.props: Access album data passed from getStaticPaths
 const { album } = Astro.props;
 
-// Load category for this album to show back link
 const categoryModules = Object.values(
   import.meta.glob('/src/content/categories/*.json', { eager: true })
 ) as any[];
@@ -32,68 +25,74 @@ const category = categoryModules.find(
 )?.default;
 ---
 
-<!-- WHY conditional render: Return 404 for non-existent albums (should not happen with getStaticPaths) -->
 {!album ? (
-  <Layout title="Album Not Found">
-    <div class="container mx-auto px-4 py-8">
-     	<div class="max-w-7xl">
-				<h1 class="text-4xl font-bold mb-4">Album Not Found</h1>
-				<p class="text-text-secondary">
-					The requested album does not exist.
-				</p>
-			</div>
-		</div>
+  <Layout title="Альбом не найден">
+    <div class="container mx-auto px-6 md:px-12 py-20 text-center">
+      <h1 class="text-4xl font-light mb-4" style="font-family: var(--font-serif);">
+        Альбом не найден
+      </h1>
+      <a href={homeUrl()} class="text-text-secondary hover:text-white transition-colors">
+        ← Вернуться на главную
+      </a>
+    </div>
   </Layout>
 ) : (
-  <Layout title={`${album.title} - Portfolio`}>
-    <div class="container mx-auto px-4 py-8">
-			<div class="max-w-7xl">
-				<header class="mb-6">
-					<div class="flex items-center gap-4 mb-4">
-						{
-							category && (
-								<a
-									href={categoryUrl(category.id)}
-									class="text-sm text-accent hover:underline flex items-center gap-1"
-								>
-									<span>←</span>
-									{category.title}
-								</a>
-							)
-						}
-					</div>
+  <Layout title={`${album.title} — Portfolio`}>
+    <div class="container mx-auto px-6 md:px-12 py-12">
+      <div class="max-w-7xl mx-auto">
+        <!-- Header with back link -->
+        <header class="mb-12 animate-fade-in">
+          <!-- Back navigation -->
+          <a 
+            href={category ? categoryUrl(category.id) : homeUrl()}
+            class="inline-flex items-center gap-2 text-text-secondary hover:text-white transition-colors duration-300 mb-8"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="19" y1="12" x2="5" y2="12"></line>
+              <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+            <span class="text-sm tracking-wide">
+              {category ? category.title : 'Все работы'}
+            </span>
+          </a>
 
-					<h1 class="text-4xl font-bold mb-2">{album.title}</h1>
-					{album.description && (
-						<p class="text-text-secondary mb-4">{album.description}</p>
-					)}
-					<p class="text-sm text-text-secondary">
-						{new Date(album.date).toLocaleDateString('ru-RU', {
-							year: 'numeric',
-							month: 'long',
-							day: 'numeric',
-						})}
-						{album.photos && (
-							<span> · {album.photos.length} фото</span>
-						)}
-					</p>
-				</header>
+          <!-- Album title -->
+          <h1 class="text-4xl md:text-5xl lg:text-6xl font-light mb-4" style="font-family: var(--font-serif);">
+            {album.title}
+          </h1>
 
-				{
-					album.photos && album.photos.length > 0 ? (
-						<>
-							<PhotoGrid photos={album.photos} albumTitle={album.title} />
-							<Lightbox photos={album.photos} />
-						</>
-					) : (
-						<div class="text-center py-20">
-							<p class="text-text-secondary">
-								В этом альбоме пока нет фотографий.
-							</p>
-						</div>
-					)
-				}
-			</div>
-		</div>
+          {album.description && (
+            <p class="text-text-secondary text-lg max-w-2xl mb-4">
+              {album.description}
+            </p>
+          )}
+
+          <p class="text-sm text-text-secondary/60">
+            {new Date(album.date).toLocaleDateString('ru-RU', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })}
+            {album.photos && (
+              <span class="ml-4">{album.photos.length} фото</span>
+            )}
+          </p>
+        </header>
+
+        <!-- Photo grid -->
+        {album.photos && album.photos.length > 0 ? (
+          <>
+            <PhotoGrid photos={album.photos} albumTitle={album.title} />
+            <Lightbox photos={album.photos} />
+          </>
+        ) : (
+          <div class="text-center py-20">
+            <p class="text-text-secondary">
+              В этом альбоме пока нет фотографий.
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
   </Layout>
 )}

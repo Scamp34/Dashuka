@@ -1,8 +1,8 @@
 ---
-// WHY AlbumCard.astro: Reusable album thumbnail card component for homepage grid
-// WHY hover effects: Enhances UX, provides visual feedback, matches reference portfolio design
+// WHY AlbumCard.astro: Album card with Peter Beavis style hover effects
+// Elegant image zoom, text overlay reveal on hover
 
-import { albumUrl } from '../lib/urls';
+import { albumUrl, withBase } from '../lib/urls';
 
 interface Album {
 	id: string;
@@ -17,38 +17,37 @@ interface Props {
 }
 
 const { album } = Astro.props;
+const coverUrl = withBase(album.cover);
 ---
 
-<a href={albumUrl(album.id)} class="block group">
-	<article class="relative overflow-hidden rounded-lg bg-white/5">
-		<!-- WHY aspect-[4/3]: Standard photo ratio, consistent grid layout -->
-		<!-- WHY overflow-hidden: Contains scaled image during hover effect -->
-		<div class="aspect-[4/3] overflow-hidden">
-			<!--
-				WHY group-hover:scale-105: Slight zoom on hover for visual feedback
-				WHY transition-transform duration-300: Smooth animation, not jarring
-			-->
+<a href={albumUrl(album.id)} class="block group stagger-item">
+	<article class="relative overflow-hidden">
+		<!-- WHY: Aspect ratio container for consistent grid -->
+		<div class="aspect-[4/3] overflow-hidden bg-white/5">
 			<img
-				src={album.cover}
+				src={coverUrl}
 				alt={album.title}
-				class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+				loading="lazy"
+				decoding="async"
+				class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
 			/>
 		</div>
 
-		<!-- WHY absolute positioning: Overlay text on image without affecting layout -->
-		<!-- WHY gradient-to-t: Fades text background from opaque to transparent for readability -->
-		<div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
-			<h2 class="text-lg font-bold mb-1">
+		<!-- WHY: Overlay that appears on hover like Peter Beavis -->
+		<div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+
+		<!-- WHY: Title reveal from bottom on hover -->
+		<div class="absolute bottom-0 left-0 right-0 p-6 transform translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 ease-out">
+			<h2 class="text-xl font-light tracking-wide text-white" style="font-family: var(--font-serif);">
 				{album.title}
 			</h2>
-			<!-- WHY localeDateString ru-RU: Russian date format matching project language -->
-			<p class="text-sm text-text-secondary">
-				{new Date(album.date).toLocaleDateString('ru-RU', {
-					year: 'numeric',
-					month: 'long',
-					day: 'numeric',
-				})}
-			</p>
 		</div>
 	</article>
 </a>
+
+<style>
+	/* WHY: Ensure smooth transform on the card */
+	article {
+		will-change: transform;
+	}
+</style>

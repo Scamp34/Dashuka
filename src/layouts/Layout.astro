@@ -1,6 +1,6 @@
 ---
-// WHY Layout.astro: Base template for all pages with consistent dark theme
-// WHY dark theme default (#111111): Matches reference portfolio design, photos stand out
+// WHY Layout.astro: Base template with Peter Beavis inspired minimal dark design
+// Clean typography, smooth animations, elegant transitions
 import Navigation from '../components/Navigation.astro';
 
 interface Props {
@@ -11,59 +11,47 @@ const { title = 'Portfolio' } = Astro.props;
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="ru">
 	<head>
 		<meta charset="UTF-8" />
-		<meta name="description" content="Photo portfolio website" />
+		<meta name="description" content="Фото портфолио" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<!-- WHY theme-color: Matches background for seamless mobile browser UI -->
-		<meta name="theme-color" content="#111111" />
+		<meta name="theme-color" content="#0a0a0a" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="generator" content={Astro.generator} />
+		<!-- WHY Google Fonts: Elegant typography like Peter Beavis -->
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 		<title>{title}</title>
 	</head>
-	<!-- WHY bg-background text-text-primary: Dark theme with light text for photo gallery -->
 	<body class="bg-background text-text-primary antialiased">
 		<div class="min-h-screen flex flex-col">
-			<header class="bg-background/95 backdrop-blur-sm sticky top-0 z-50">
-				<div class="container mx-auto">
-					<!-- WHY max-w-7xl: Reasonable max width for large screens, prevents overly wide content -->
-					<div class="max-w-7xl">
-						<Navigation />
-					</div>
-				</div>
+			<!-- WHY: Minimal fixed header like Peter Beavis -->
+			<header class="fixed top-0 left-0 right-0 z-50 mix-blend-difference">
+				<Navigation />
 			</header>
 
-			<main class="flex-1">
+			<main class="flex-1 pt-20">
 				<slot />
 			</main>
 
-			<footer class="border-t border-white/10 py-8 mt-16">
-				<!-- WHY container mx-auto: Centers footer content with consistent margins -->
-				<div class="container mx-auto px-4">
-					<!-- WHY max-w-7xl: Matches header max width for visual consistency -->
-					<div class="max-w-7xl">
-						<div class="text-center text-text-secondary">
-							<p class="mb-2">
-								© {new Date().getFullYear()} Portfolio. All rights reserved.
-							</p>
-							<!-- WHY flex gap-4 justify-center: Horizontal social link layout -->
-							<div class="flex gap-4 justify-center">
-								<a
-									href="mailto:hello@example.com"
-									class="hover:text-accent transition-colors"
-								>
-									Email
+			<!-- WHY: Minimal footer with contact info -->
+			<footer class="py-16 mt-auto">
+				<div class="container mx-auto px-6 md:px-12">
+					<div class="max-w-7xl mx-auto">
+						<div class="flex flex-col md:flex-row justify-between items-center gap-8 text-sm text-text-secondary">
+							<div class="flex flex-col md:flex-row items-center gap-4 md:gap-8">
+								<a href="mailto:hello@example.com" class="hover:text-text-primary transition-colors duration-300">
+									hello@example.com
 								</a>
-								<a
-									href="https://instagram.com"
-									target="_blank"
-									rel="noopener noreferrer"
-									class="hover:text-accent transition-colors"
-								>
+								<a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="hover:text-text-primary transition-colors duration-300">
 									Instagram
 								</a>
 							</div>
+							<p class="text-text-secondary/60">
+								© {new Date().getFullYear()}
+							</p>
 						</div>
 					</div>
 				</div>
@@ -73,10 +61,26 @@ const { title = 'Portfolio' } = Astro.props;
 </html>
 
 <style is:global>
-	/* WHY system font stack: Fast loading, matches user's OS, no external requests */
+	/* WHY: Elegant typography system inspired by Peter Beavis */
 	:root {
-		font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
-			Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+		--font-serif: 'Cormorant Garamond', Georgia, serif;
+		--font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+	}
+
+	html {
+		scroll-behavior: smooth;
+	}
+
+	body {
+		font-family: var(--font-sans);
+		font-weight: 300;
+		letter-spacing: 0.01em;
+	}
+
+	h1, h2, h3 {
+		font-family: var(--font-serif);
+		font-weight: 300;
+		letter-spacing: 0.02em;
 	}
 
 	* {
@@ -89,5 +93,92 @@ const { title = 'Portfolio' } = Astro.props;
 		display: block;
 		max-width: 100%;
 		height: auto;
+	}
+
+	/* WHY: Smooth page transitions */
+	.page-transition {
+		animation: pageIn 0.8s ease-out forwards;
+	}
+
+	@keyframes pageIn {
+		from {
+			opacity: 0;
+			transform: translateY(10px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+
+	/* WHY: Staggered fade-in for grid items */
+	.stagger-item {
+		opacity: 0;
+		animation: fadeInUp 0.6s ease-out forwards;
+	}
+
+	.stagger-item:nth-child(1) { animation-delay: 0ms; }
+	.stagger-item:nth-child(2) { animation-delay: 75ms; }
+	.stagger-item:nth-child(3) { animation-delay: 150ms; }
+	.stagger-item:nth-child(4) { animation-delay: 225ms; }
+	.stagger-item:nth-child(5) { animation-delay: 300ms; }
+	.stagger-item:nth-child(6) { animation-delay: 375ms; }
+	.stagger-item:nth-child(7) { animation-delay: 450ms; }
+	.stagger-item:nth-child(8) { animation-delay: 525ms; }
+
+	@keyframes fadeInUp {
+		from {
+			opacity: 0;
+			transform: translateY(30px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+
+	/* WHY: Smooth image hover zoom */
+	.image-hover {
+		overflow: hidden;
+	}
+
+	.image-hover img {
+		transition: transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+	}
+
+	.image-hover:hover img {
+		transform: scale(1.05);
+	}
+
+	/* WHY: Text reveal on hover */
+	.text-reveal {
+		position: relative;
+		overflow: hidden;
+	}
+
+	.text-reveal-content {
+		transform: translateY(100%);
+		opacity: 0;
+		transition: transform 0.4s ease, opacity 0.4s ease;
+	}
+
+	.group:hover .text-reveal-content {
+		transform: translateY(0);
+		opacity: 1;
+	}
+
+	/* WHY: Subtle border effect */
+	.border-fade {
+		position: relative;
+	}
+
+	.border-fade::after {
+		content: '';
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		height: 1px;
+		background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
 	}
 </style>

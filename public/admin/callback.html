@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Auth Callback</title>
+  <script>
+    // WHY: GitHub OAuth redirects here with ?code=xxx&state=yyy
+    // Decap CMS uses hash routing (#/), so we need to convert query params to hash
+    (function() {
+      const params = new URLSearchParams(window.location.search);
+      const code = params.get('code');
+      const state = params.get('state');
+      const error = params.get('error');
+      const errorDescription = params.get('error_description');
+
+      let hash = '#/';
+      if (code) {
+        // Store the auth code in localStorage for Decap CMS to pick up
+        localStorage.setItem('decap-cms-oauth-code', code);
+        if (state) {
+          localStorage.setItem('decap-cms-oauth-state', state);
+        }
+      } else if (error) {
+        localStorage.setItem('decap-cms-oauth-error', error);
+        if (errorDescription) {
+          localStorage.setItem('decap-cms-oauth-error-description', errorDescription);
+        }
+      }
+
+      // Redirect to main admin interface
+      window.location.href = window.location.pathname.replace(/\/callback\.html$/, '/') + '#' + hash;
+    })();
+  </script>
+</head>
+<body>
+  <p>Redirecting to admin...</p>
+</body>
+</html>

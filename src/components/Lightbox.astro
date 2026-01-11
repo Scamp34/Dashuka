@@ -1,97 +1,73 @@
 ---
-// WHY Lightbox.astro: Fullscreen photo viewer with keyboard and touch navigation
-// WHY swipe detection: Critical UX for mobile users (primary use case is iPhone)
+// WHY Lightbox.astro: Fullscreen photo viewer with elegant minimal design
+// Smooth transitions, keyboard/touch navigation
 
 interface Props {
-	// WHY photos array: All photos in current album for navigation
 	photos?: string[];
 }
 ---
 
-<!-- WHY fixed inset-0: Fullscreen overlay covering entire viewport -->
-<!-- WHY z-50: Above all other content including navigation -->
+<!-- Lightbox overlay -->
 <div
 	id="lightbox"
-	class="fixed inset-0 z-50 hidden bg-black/95 backdrop-blur-sm"
+	class="fixed inset-0 z-[100] hidden bg-black/98"
 	aria-hidden="true"
 >
-	<!-- WHY close button: Top-right position, always visible for easy exit -->
+	<!-- Close button -->
 	<button
 		id="lightbox-close"
-		class="absolute top-4 right-4 z-10 p-2 text-white/80 hover:text-white bg-black/50 rounded-full"
-		aria-label="Close lightbox"
+		class="absolute top-6 right-6 z-10 p-3 text-white/60 hover:text-white transition-colors duration-300"
+		aria-label="Закрыть"
 	>
-		<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+		<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
 			<line x1="18" y1="6" x2="6" y2="18"></line>
 			<line x1="6" y1="6" x2="18" y2="18"></line>
 		</svg>
 	</button>
 
-	<!-- WHY prev button: Left side, half opacity, full opacity on hover -->
+	<!-- Previous button -->
 	<button
 		id="lightbox-prev"
-		class="absolute left-4 top-1/2 -translate-y-1/2 z-10 p-4 text-white/50 hover:text-white bg-black/30 rounded-full transition-opacity"
-		aria-label="Previous photo"
+		class="absolute left-6 top-1/2 -translate-y-1/2 z-10 p-4 text-white/40 hover:text-white transition-colors duration-300"
+		aria-label="Предыдущее фото"
 	>
-		<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+		<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
 			<polyline points="15 18 9 12 15 6"></polyline>
 		</svg>
 	</button>
 
-	<!-- WHY next button: Right side, half opacity, full opacity on hover -->
+	<!-- Next button -->
 	<button
 		id="lightbox-next"
-		class="absolute right-4 top-1/2 -translate-y-1/2 z-10 p-4 text-white/50 hover:text-white bg-black/30 rounded-full transition-opacity"
-		aria-label="Next photo"
+		class="absolute right-6 top-1/2 -translate-y-1/2 z-10 p-4 text-white/40 hover:text-white transition-colors duration-300"
+		aria-label="Следующее фото"
 	>
-		<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+		<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
 			<polyline points="9 18 15 12 9 6"></polyline>
 		</svg>
 	</button>
 
-	<!-- WHY flex center: Center image both horizontally and vertically -->
-	<!-- WHY max-h-full: Ensure image fits in viewport without scrolling -->
-	<div class="flex items-center justify-center h-full p-12">
+	<!-- Image container -->
+	<div class="flex items-center justify-center h-full p-16">
 		<img
 			id="lightbox-image"
 			src=""
 			alt=""
-			class="max-h-full max-w-full object-contain"
+			class="max-h-full max-w-full object-contain transition-opacity duration-300"
 		/>
 	</div>
 
-	<!-- WHY counter: Show current position (e.g., "3 / 12") -->
-	<div id="lightbox-counter" class="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/80 text-sm"></div>
+	<!-- Counter -->
+	<div id="lightbox-counter" class="absolute bottom-6 left-1/2 -translate-x-1/2 text-white/40 text-sm tracking-wide"></div>
 </div>
 
 <script is:inline>
-	// ============================================================================
-	// TIER 5 BLOCK: Complex algorithm requiring explanation
-	// ============================================================================
-	// Touch swipe detection algorithm for mobile lightbox navigation
-	// -------------------------------------------------------------------------
-	// PROBLEM: Mobile users expect to swipe between photos (native gesture)
-	// SOLUTION: Track touch start/end coordinates and detect horizontal swipes
-	//
-	// ALGORITHM:
-	// 1. On touchstart: Record initial X coordinate and timestamp
-	// 2. On touchend: Record final X coordinate and calculate delta
-	// 3. If delta > threshold (50px) and duration < 300ms: Register as swipe
-	// 4. Positive delta = swipe right (show next photo, finger moved left to right)
-	// 5. Negative delta = swipe left (show prev photo, finger moved right to left)
-	//
-	// WHY threshold: Distinguishes intentional swipes from accidental touches
-	// WHY time check: Prevents slow drags from being interpreted as swipes
-	// =========================================================================
-
-	// WHY state object: Track lightbox state (open/closed, current index, photos)
 	const state = {
 		isOpen: false,
 		currentIndex: 0,
 		photos: [],
 	};
 
-	// DOM element references (cached for performance)
 	const lightbox = document.getElementById('lightbox');
 	const lightboxImage = document.getElementById('lightbox-image');
 	const lightboxCounter = document.getElementById('lightbox-counter');
@@ -99,32 +75,24 @@ interface Props {
 	const prevBtn = document.getElementById('lightbox-prev');
 	const nextBtn = document.getElementById('lightbox-next');
 
-	if (!lightbox || !lightboxImage || !lightboxCounter || !closeBtn || !prevBtn || !nextBtn) {
-		console.error('Lightbox elements not found');
-	} else {
-		// WHY showImage function: Updates lightbox content and visibility
+	if (lightbox && lightboxImage && lightboxCounter && closeBtn && prevBtn && nextBtn) {
 		function showImage(index) {
 			if (!state.photos.length) return;
 
-			// WHY modulo: Wrap around navigation (last -> first, first -> last)
 			state.currentIndex = (index + state.photos.length) % state.photos.length;
 			const photo = state.photos[state.currentIndex];
 
-			// Update image source with loading state
-			lightboxImage.style.opacity = '0.5';
+			lightboxImage.style.opacity = '0.3';
 			lightboxImage.src = photo;
-			lightboxImage.alt = `Photo ${state.currentIndex + 1} of ${state.photos.length}`;
+			lightboxImage.alt = `Фото ${state.currentIndex + 1} из ${state.photos.length}`;
 
-			// Restore opacity when image loads
 			lightboxImage.onload = () => {
 				lightboxImage.style.opacity = '1';
 			};
 
-			// Update counter display
 			lightboxCounter.textContent = `${state.currentIndex + 1} / ${state.photos.length}`;
 		}
 
-		// WHY openLightbox: Show lightbox with specific photo index
 		function openLightbox(index, photos) {
 			state.photos = photos;
 			state.currentIndex = index;
@@ -132,23 +100,30 @@ interface Props {
 
 			showImage(index);
 
-			// Show lightbox and enable accessibility
 			lightbox.classList.remove('hidden');
 			lightbox.setAttribute('aria-hidden', 'false');
-
-			// WHY preventBodyScroll: Stop background scrolling when lightbox is open
 			document.body.style.overflow = 'hidden';
+
+			// Animate in
+			lightbox.style.opacity = '0';
+			requestAnimationFrame(() => {
+				lightbox.style.transition = 'opacity 0.3s ease';
+				lightbox.style.opacity = '1';
+			});
 		}
 
-		// WHY closeLightbox: Hide lightbox and restore normal scrolling
 		function closeLightbox() {
 			state.isOpen = false;
-			lightbox.classList.add('hidden');
-			lightbox.setAttribute('aria-hidden', 'true');
-			document.body.style.overflow = '';
+			
+			lightbox.style.opacity = '0';
+			setTimeout(() => {
+				lightbox.classList.add('hidden');
+				lightbox.setAttribute('aria-hidden', 'true');
+				document.body.style.overflow = '';
+				lightbox.style.transition = '';
+			}, 300);
 		}
 
-		// WHY nextImage/prevImage: Navigate to adjacent photos with wraparound
 		function nextImage() {
 			showImage(state.currentIndex + 1);
 		}
@@ -157,11 +132,7 @@ interface Props {
 			showImage(state.currentIndex - 1);
 		}
 
-		// ============================================================================
-		// EVENT LISTENERS
-		// ============================================================================
-
-		// Button click handlers
+		// Event listeners
 		closeBtn.addEventListener('click', closeLightbox);
 		nextBtn.addEventListener('click', (e) => {
 			e.stopPropagation();
@@ -172,14 +143,13 @@ interface Props {
 			prevImage();
 		});
 
-		// WHY click outside: Close lightbox when clicking the backdrop (not the image)
 		lightbox.addEventListener('click', (e) => {
 			if (e.target === lightbox) {
 				closeLightbox();
 			}
 		});
 
-		// Keyboard navigation (arrow keys, Escape)
+		// Keyboard navigation
 		document.addEventListener('keydown', (e) => {
 			if (!state.isOpen) return;
 
@@ -196,8 +166,7 @@ interface Props {
 			}
 		});
 
-		// Touch swipe detection for mobile
-		// WHY touchstart/touchend: Track finger movement for swipe gestures
+		// Touch swipe
 		let touchStartX = 0;
 		let touchStartY = 0;
 		let touchStartTime = 0;
@@ -213,42 +182,26 @@ interface Props {
 			if (!state.isOpen) return;
 
 			const touch = e.changedTouches[0];
-			const touchEndX = touch.clientX;
-			const touchEndY = touch.clientY;
+			const deltaX = touch.clientX - touchStartX;
+			const deltaY = touch.clientY - touchStartY;
 			const deltaTime = Date.now() - touchStartTime;
 
-			// Calculate horizontal and vertical distance traveled
-			const deltaX = touchEndX - touchStartX;
-			const deltaY = touchEndY - touchStartY;
-
-			// WHY abs(deltaY) < abs(deltaX): Ensure horizontal swipe (not vertical scroll)
-			// WHY threshold 50: Minimum distance for intentional swipe
-			// WHY deltaTime < 300: Quick gesture, not slow drag
 			if (
 				Math.abs(deltaX) > 50 &&
 				Math.abs(deltaY) < Math.abs(deltaX) &&
 				deltaTime < 300
 			) {
 				if (deltaX > 0) {
-					// Swiped right (finger moved left to right) -> show next photo
-					nextImage();
-				} else {
-					// Swiped left (finger moved right to left) -> show prev photo
 					prevImage();
+				} else {
+					nextImage();
 				}
 			}
 		}, { passive: true });
 
-		// Listen for custom event from PhotoGrid component
+		// Listen for open event
 		window.addEventListener('open-lightbox', (e) => {
 			openLightbox(e.detail.index, e.detail.photos);
 		});
 	}
 </script>
-
-<style>
-	/* WHY transition opacity: Smooth fade when loading new image in lightbox */
-	#lightbox-image {
-		transition: opacity 0.2s ease;
-	}
-</style>

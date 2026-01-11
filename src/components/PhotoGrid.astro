@@ -1,43 +1,42 @@
 ---
-// WHY PhotoGrid.astro: Masonry-style photo grid layout with lazy loading for album pages
-// WHY CSS columns: True masonry layout where items flow vertically like Pinterest
-// WHY lazy loading: Reduces initial page load, defers offscreen images until needed
+// WHY PhotoGrid.astro: Masonry-style photo grid with Peter Beavis hover effects
+import { withBase } from '../lib/urls';
 
 interface Props {
 	photos: string[];
-	// WHY albumTitle: Used for alt text accessibility
 	albumTitle: string;
 }
 
 const { photos, albumTitle } = Astro.props;
-
-// WHY responsiveColumns: Apply different column counts at breakpoints
-// Mobile: 1 column, Tablet (sm): 2 columns, Desktop (lg): 3 columns, Large (xl): 4 columns
-const responsiveColumns = 'columns-1 sm:columns-2 lg:columns-3 xl:columns-4';
+const photosWithBase = photos.map(photo => withBase(photo));
 ---
 
-<div class={`gap-4 space-y-4 ${responsiveColumns}`}>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
 	{
-		photos.map((photo, index) => (
-			<div class="break-inside-avoid group relative overflow-hidden rounded-lg bg-white/5">
-				<!-- WHY loading="lazy": Defer loading offscreen images -->
-				<!-- WHY decoding="async": Prevents blocking main thread -->
-				<img
-					src={photo}
-					alt={`${albumTitle} - фото ${index + 1}`}
-					loading="lazy"
-					decoding="async"
-					data-index={index}
-					class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300 cursor-pointer"
-				/>
+		photosWithBase.map((photo, index) => (
+			<div 
+				class="stagger-item group relative overflow-hidden cursor-pointer"
+				style={`animation-delay: ${index * 75}ms`}
+			>
+				<div class="aspect-[4/3] overflow-hidden bg-white/5">
+					<img
+						src={photo}
+						alt={`${albumTitle} — фото ${index + 1}`}
+						loading="lazy"
+						decoding="async"
+						data-index={index}
+						class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+					/>
+				</div>
+				
+				<!-- WHY: Subtle overlay on hover -->
+				<div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-500 pointer-events-none"></div>
 			</div>
 		))
 	}
 </div>
 
-<!-- WHY inline script: Add click handlers for lightbox integration -->
-<script is:inline define:vars={{ photos }}>
-	// WHY CustomEvent: Allows passing data (photo index) between components
+<script is:inline define:vars={{ photos: photosWithBase }}>
 	const handleClick = (index) => {
 		const event = new CustomEvent('open-lightbox', {
 			detail: { index, photos }
@@ -45,7 +44,6 @@ const responsiveColumns = 'columns-1 sm:columns-2 lg:columns-3 xl:columns-4';
 		window.dispatchEvent(event);
 	};
 
-	// Attach click handlers to all images in this PhotoGrid
 	document.querySelectorAll('img[data-index]').forEach((img) => {
 		img.addEventListener('click', () => {
 			const index = parseInt(img.getAttribute('data-index') || '0');
