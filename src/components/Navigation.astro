@@ -1,6 +1,6 @@
 ---
-// WHY Navigation.astro: Minimal navigation inspired by Peter Beavis
-// Fixed header with mix-blend-difference for elegant contrast
+// WHY Navigation.astro: Minimal navigation with dropdown menu on mobile
+// Categories appear as a list below header, not fullscreen overlay
 import { stripBase, categoryUrl, homeUrl } from '../lib/urls';
 
 const categories = Object.values(
@@ -11,148 +11,151 @@ const currentPath = stripBase(Astro.url.pathname);
 ---
 
 <nav class="py-6 px-6 md:px-12">
-	<div class="max-w-7xl mx-auto flex items-center justify-between">
-		<!-- Logo / Site Name -->
-		<a 
-			href={homeUrl()} 
-			class="text-lg font-light tracking-wider text-white hover:opacity-70 transition-opacity duration-300"
-			style="font-family: var(--font-serif);"
-		>
-			Portfolio
-		</a>
+	<div class="max-w-7xl mx-auto">
+		<!-- Header row with logo and menu button -->
+		<div class="flex items-center justify-between">
+			<!-- Logo / Site Name -->
+			<a 
+				href={homeUrl()} 
+				class="text-lg font-light tracking-wider text-white hover:opacity-70 transition-opacity duration-300"
+				style="font-family: var(--font-serif);"
+			>
+				Portfolio
+			</a>
 
-		<!-- Desktop Navigation -->
-		<ul class="hidden md:flex items-center gap-8">
-			<li>
-				<a
-					href={homeUrl()}
-					class:list={[
-						'text-sm tracking-wide transition-opacity duration-300',
-						currentPath === '/' ? 'text-white' : 'text-white/60 hover:text-white'
-					]}
-				>
-					Все
-				</a>
-			</li>
-			{categories.map((category) => (
+			<!-- Desktop Navigation -->
+			<ul class="hidden md:flex items-center gap-8">
 				<li>
 					<a
-						href={categoryUrl(category.id)}
+						href={homeUrl()}
 						class:list={[
 							'text-sm tracking-wide transition-opacity duration-300',
-							currentPath === `/category/${category.id}` ? 'text-white' : 'text-white/60 hover:text-white'
+							currentPath === '/' ? 'text-white' : 'text-white/60 hover:text-white'
 						]}
 					>
-						{category.title}
+						Все
 					</a>
 				</li>
-			))}
-		</ul>
+				{categories.map((category) => (
+					<li>
+						<a
+							href={categoryUrl(category.id)}
+							class:list={[
+								'text-sm tracking-wide transition-opacity duration-300',
+								currentPath === `/category/${category.id}` ? 'text-white' : 'text-white/60 hover:text-white'
+							]}
+						>
+							{category.title}
+						</a>
+					</li>
+				))}
+			</ul>
 
-		<!-- Mobile Menu Button -->
-		<button
-			id="nav-menu-button"
-			class="md:hidden text-white p-2"
-			aria-expanded="false"
-			aria-controls="nav-menu"
-			aria-label="Меню"
-		>
-			<svg
-				id="nav-menu-icon"
-				xmlns="http://www.w3.org/2000/svg"
-				width="24"
-				height="24"
-				viewBox="0 0 24 24"
-				fill="none"
-				stroke="currentColor"
-				stroke-width="1.5"
-				stroke-linecap="round"
-				stroke-linejoin="round"
-				class="transition-transform duration-300"
+			<!-- Mobile Menu Button -->
+			<button
+				id="nav-menu-button"
+				class="md:hidden text-white p-2 flex items-center gap-2"
+				aria-expanded="false"
+				aria-controls="nav-menu"
 			>
-				<line x1="4" y1="8" x2="20" y2="8" class="origin-center transition-all duration-300" id="line1"></line>
-				<line x1="4" y1="16" x2="20" y2="16" class="origin-center transition-all duration-300" id="line2"></line>
-			</svg>
-		</button>
-	</div>
-
-	<!-- Mobile Menu Overlay -->
-	<div
-		id="nav-menu"
-		class="fixed inset-0 bg-background/98 backdrop-blur-sm z-50 hidden flex-col items-center justify-center"
-	>
-		<button
-			id="nav-menu-close"
-			class="absolute top-6 right-6 text-white p-2"
-			aria-label="Закрыть меню"
-		>
-			<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-				<line x1="18" y1="6" x2="6" y2="18"></line>
-				<line x1="6" y1="6" x2="18" y2="18"></line>
-			</svg>
-		</button>
-
-		<ul class="flex flex-col items-center gap-8">
-			<li>
-				<a
-					href={homeUrl()}
-					class="text-2xl font-light tracking-wide text-white hover:opacity-70 transition-opacity"
-					style="font-family: var(--font-serif);"
+				<span class="text-sm tracking-wide">Категории</span>
+				<svg
+					id="nav-menu-icon"
+					xmlns="http://www.w3.org/2000/svg"
+					width="16"
+					height="16"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					class="transition-transform duration-300"
 				>
-					Все работы
-				</a>
-			</li>
-			{categories.map((category) => (
+					<polyline points="6 9 12 15 18 9"></polyline>
+				</svg>
+			</button>
+		</div>
+
+		<!-- Mobile Dropdown Menu (below header, not overlay) -->
+		<div
+			id="nav-menu"
+			class="md:hidden overflow-hidden transition-all duration-300 ease-out"
+			style="max-height: 0;"
+		>
+			<ul class="flex flex-col gap-1 pt-6 pb-2">
 				<li>
 					<a
-						href={categoryUrl(category.id)}
-						class="text-2xl font-light tracking-wide text-white hover:opacity-70 transition-opacity"
-						style="font-family: var(--font-serif);"
+						href={homeUrl()}
+						class:list={[
+							'block py-3 text-base tracking-wide transition-colors duration-200 border-b border-white/10',
+							currentPath === '/' ? 'text-white' : 'text-white/60 hover:text-white'
+						]}
 					>
-						{category.title}
+						Все работы
 					</a>
 				</li>
-			))}
-		</ul>
+				{categories.map((category) => (
+					<li>
+						<a
+							href={categoryUrl(category.id)}
+							class:list={[
+								'block py-3 text-base tracking-wide transition-colors duration-200 border-b border-white/10',
+								currentPath === `/category/${category.id}` ? 'text-white' : 'text-white/60 hover:text-white'
+							]}
+						>
+							{category.title}
+						</a>
+					</li>
+				))}
+			</ul>
+		</div>
 	</div>
 </nav>
 
 <script>
 	const menuButton = document.getElementById('nav-menu-button') as HTMLButtonElement | null;
-	const menuClose = document.getElementById('nav-menu-close') as HTMLButtonElement | null;
+	const menuIcon = document.getElementById('nav-menu-icon') as SVGElement | null;
 	const menu = document.getElementById('nav-menu') as HTMLDivElement | null;
 
-	if (menuButton && menuClose && menu) {
+	if (menuButton && menuIcon && menu) {
 		const btn = menuButton;
-		const closeBtn = menuClose;
+		const icon = menuIcon;
 		const menuEl = menu;
+		let isOpen = false;
 
-		function openMenu(): void {
-			menuEl.classList.remove('hidden');
-			menuEl.classList.add('flex');
-			document.body.style.overflow = 'hidden';
-			btn.setAttribute('aria-expanded', 'true');
+		function toggleMenu(): void {
+			isOpen = !isOpen;
+			
+			if (isOpen) {
+				// Open: set max-height to content height
+				menuEl.style.maxHeight = menuEl.scrollHeight + 'px';
+				icon.style.transform = 'rotate(180deg)';
+			} else {
+				// Close: set max-height to 0
+				menuEl.style.maxHeight = '0';
+				icon.style.transform = 'rotate(0deg)';
+			}
+			
+			btn.setAttribute('aria-expanded', isOpen.toString());
 		}
 
-		function closeMenu(): void {
-			menuEl.classList.add('hidden');
-			menuEl.classList.remove('flex');
-			document.body.style.overflow = '';
-			btn.setAttribute('aria-expanded', 'false');
-		}
-
-		btn.addEventListener('click', openMenu);
-		closeBtn.addEventListener('click', closeMenu);
-
-		// Close on link click
-		menuEl.querySelectorAll('a').forEach((link) => {
-			link.addEventListener('click', closeMenu);
-		});
+		btn.addEventListener('click', toggleMenu);
 
 		// Close on Escape key
 		document.addEventListener('keydown', (e) => {
-			if (e.key === 'Escape' && !menuEl.classList.contains('hidden')) {
-				closeMenu();
+			if (e.key === 'Escape' && isOpen) {
+				toggleMenu();
+			}
+		});
+
+		// Close menu on window resize to desktop
+		window.addEventListener('resize', () => {
+			if (window.innerWidth >= 768 && isOpen) {
+				menuEl.style.maxHeight = '0';
+				icon.style.transform = 'rotate(0deg)';
+				btn.setAttribute('aria-expanded', 'false');
+				isOpen = false;
 			}
 		});
 	}

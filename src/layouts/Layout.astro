@@ -27,12 +27,12 @@ const { title = 'Portfolio' } = Astro.props;
 	</head>
 	<body class="bg-background text-text-primary antialiased">
 		<div class="min-h-screen flex flex-col">
-			<!-- WHY: Minimal fixed header like Peter Beavis -->
-			<header class="fixed top-0 left-0 right-0 z-50 mix-blend-difference">
+			<!-- WHY: Sticky header with background for dropdown menu support -->
+			<header class="sticky top-0 z-50 bg-background/95 backdrop-blur-sm">
 				<Navigation />
 			</header>
 
-			<main class="flex-1 pt-20">
+			<main class="flex-1">
 				<slot />
 			</main>
 
