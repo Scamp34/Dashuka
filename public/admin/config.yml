@@ -6,10 +6,12 @@ backend:
   branch: main
   repo: Scamp34/Dashuka
   client_id: Ov23liqo2FFyhlqbgFQp
+  # WHY api_root: Explicit GitHub API endpoint
+  api_root: https://api.github.com
   # WHY base_url: GitHub API endpoint for OAuth flow
   base_url: https://github.com
-  # WHY auth_endpoint: OAuth authorization path
-  auth_endpoint: oauth
+  # WHY auth_endpoint: Full OAuth authorization path
+  auth_endpoint: login/oauth/authorize
   # WHY site_url: Required for GitHub Pages OAuth callback
   site_url: https://scamp34.github.io/Dashuka
 
