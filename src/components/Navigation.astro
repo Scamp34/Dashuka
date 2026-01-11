@@ -4,12 +4,15 @@
 // WHY horizontal on desktop: Reference Peter Beavis portfolio uses clean horizontal nav
 // WHY dropdown on mobile: Saves screen space, standard pattern for mobile navigation
 
+// WHY stripBase: Astro.url.pathname includes base path, but links need comparison without it
+import { withBase, stripBase, categoryUrl } from '../lib/urls';
+
 // Import categories for navigation links
 const categories = Object.values(
   import.meta.glob('/src/content/categories/*.json', { eager: true })
 ).map((module: any) => module.default);
 
-const currentPath = Astro.url.pathname;
+const currentPath = stripBase(Astro.url.pathname);
 ---
 
 <!-- WHY nav>ul>li structure: Semantic HTML for accessibility, screen readers understand navigation -->
@@ -54,7 +57,7 @@ const currentPath = Astro.url.pathname;
 			<li>
 				<!-- WHY whitespace-nowrap: Prevent category names from wrapping on mobile -->
 				<a
-					href="/"
+					href={withBase('/')}
 					class:text-accent={currentPath === '/'}
 					class:text-text-secondary={currentPath !== '/'}
 					class:font-bold={currentPath === '/'}
@@ -67,7 +70,7 @@ const currentPath = Astro.url.pathname;
 				categories.map((category) => (
 					<li>
 						<a
-							href={`/category/${category.id}`}
+							href={categoryUrl(category.id)}
 							class:text-accent={currentPath === `/category/${category.id}`}
 							class:text-text-secondary={currentPath !== `/category/${category.id}`}
 							class:font-bold={currentPath === `/category/${category.id}`}

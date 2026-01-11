@@ -4,10 +4,10 @@
   "category": "people",
   "date": "2024-07-01",
   "description": "Летняя семейная съемка",
-  "cover": "/assets/images/albums/family-portrait/cover.jpg",
+  "cover": "/images/albums/family-portrait/cover.jpg",
   "photos": [
-    "/assets/images/albums/family-portrait/001.jpg",
-    "/assets/images/albums/family-portrait/002.jpg",
-    "/assets/images/albums/family-portrait/003.jpg"
+    "/images/albums/family-portrait/001.jpg",
+    "/images/albums/family-portrait/002.jpg",
+    "/images/albums/family-portrait/003.jpg"
   ]
 }

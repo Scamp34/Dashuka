@@ -2,6 +2,7 @@
 import Layout from '../../layouts/Layout.astro';
 import PhotoGrid from '../../components/PhotoGrid.astro';
 import Lightbox from '../../components/Lightbox.astro';
+import { categoryUrl } from '../../lib/urls';
 
 // WHY [id].astro: Dynamic route for individual album pages
 // WHY getStaticPaths: Pre-render all album pages at build time for optimal performance
@@ -31,7 +32,7 @@ const category = categoryModules.find(
 )?.default;
 ---
 
-// WHY conditional render: Return 404 for non-existent albums (should not happen with getStaticPaths)
+<!-- WHY conditional render: Return 404 for non-existent albums (should not happen with getStaticPaths) -->
 {!album ? (
   <Layout title="Album Not Found">
     <div class="container mx-auto px-4 py-8">
@@ -52,7 +53,7 @@ const category = categoryModules.find(
 						{
 							category && (
 								<a
-									href={`/category/${category.id}`}
+									href={categoryUrl(category.id)}
 									class="text-sm text-accent hover:underline flex items-center gap-1"
 								>
 									<span>←</span>
@@ -80,7 +81,6 @@ const category = categoryModules.find(
 
 				{
 					album.photos && album.photos.length > 0 ? (
-						// WHY PhotoGrid component: Masonry layout with lazy loading and lightbox integration
 						<>
 							<PhotoGrid photos={album.photos} albumTitle={album.title} />
 							<Lightbox photos={album.photos} />

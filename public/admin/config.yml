@@ -13,7 +13,7 @@ backend:
 # WHY media_folder in src/assets: Images stored in repo for version control
 # WHY public_folder: Public URL path for serving images
 media_folder: "src/assets/images"
-public_folder: "/assets/images"
+public_folder: "/images"
 
 # WHY collections: Define content structures for albums and categories
 collections:

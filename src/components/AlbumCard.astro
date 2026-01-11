@@ -2,6 +2,8 @@
 // WHY AlbumCard.astro: Reusable album thumbnail card component for homepage grid
 // WHY hover effects: Enhances UX, provides visual feedback, matches reference portfolio design
 
+import { albumUrl } from '../lib/urls';
+
 interface Album {
 	id: string;
 	title: string;
@@ -17,7 +19,7 @@ interface Props {
 const { album } = Astro.props;
 ---
 
-<a href={`/album/${album.id}`} class="block group">
+<a href={albumUrl(album.id)} class="block group">
 	<article class="relative overflow-hidden rounded-lg bg-white/5">
 		<!-- WHY aspect-[4/3]: Standard photo ratio, consistent grid layout -->
 		<!-- WHY overflow-hidden: Contains scaled image during hover effect -->

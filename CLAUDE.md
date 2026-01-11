@@ -24,6 +24,7 @@ User (iPhone) → Decap CMS → GitHub Commit → GitHub Actions → Build → G
 | `admin/config.yml` | Decap CMS configuration (backend, collections, fields) | Adding CMS collections, customizing fields, configuring GitHub OAuth |
 | `admin/config.example.yml` | Example configuration template for setup reference | Setting up CMS for new installation |
 | `admin/index.html` | CMS entry point for development environment | Debugging CMS loading issues |
+| `admin/README.md` | CMS architecture, path configuration, troubleshooting | Debugging image 404 errors, understanding media_folder vs public_folder |
 | `public/admin/config.yml` | Production CMS configuration (synced with admin/config.yml) | CMS settings for deployed site |
 | `public/admin/index.html` | CMS entry point for production environment | Production CMS access |
 | **Pages (Routes)** ||||
@@ -50,8 +51,8 @@ User (iPhone) → Decap CMS → GitHub Commit → GitHub Actions → Build → G
 | `src/content/albums/mountain-lake.json` | Mountain Lake album | Editing album info, adding/removing photos |
 | `src/content/albums/sunset-beach.json` | Sunset Beach album | Editing album info, adding/removing photos |
 | **Assets** ||||
-| `src/assets/images/categories/*/cover.jpg` | Category cover images | Replacing category thumbnails |
-| `src/assets/images/albums/*/` | Album photo directories (cover.jpg, 001.jpg, 002.jpg, etc.) | Adding photos, organizing album images |
+| `public/images/categories/*/cover.jpg` | Category cover images | Replacing category thumbnails |
+| `public/images/albums/*/` | Album photo directories (cover.jpg, 001.jpg, 002.jpg, etc.) | Adding photos, organizing album images |
 | **Documentation** ||||
 | `README.md` | Developer documentation (setup, commands, deployment, troubleshooting) | Onboarding new developers, referencing commands |
 | `CLAUDE.md` | This file - project index with file descriptions | Understanding project structure, finding specific files |
@@ -82,10 +83,10 @@ Located in `src/content/albums/`, each album JSON file contains:
 
 ## Image Storage
 
-All images are stored in `src/assets/images/`:
+All images are stored in `public/images/`:
 
 ```
-src/assets/images/
+public/images/
 ├── categories/
 │   ├── dogs/
 │   │   └── cover.jpg
@@ -104,7 +105,22 @@ src/assets/images/
     └── ...
 ```
 
-Image paths in content files use absolute paths from `/assets/images/`.
+Image paths in content files use absolute paths from `/images/`.
+
+### Why public/ instead of src/assets/?
+
+Astro serves files from `public/` directly at the site root URL without processing. Using `public/images/` instead of `src/assets/images/` has these benefits:
+
+- **Simpler URLs**: Images served at `/images/` instead of `/assets/images/`
+- **No build processing**: Images copied directly to build output, faster builds
+- **Decap CMS compatibility**: CMS `public_folder` setting matches actual URL path
+- **Consistent architecture**: Static assets (images, admin) in public/, source code in src/
+
+Decap CMS configuration uses:
+- `media_folder: "src/assets/images"` - CMS uploads to this location (filesystem)
+- `public_folder: "/images"` - CMS writes this path to JSON files (URLs)
+
+The site is configured to serve images from `public/images/` while CMS still uploads to `src/assets/images/`. After uploading via CMS, images must be moved from `src/assets/images/` to `public/images/` manually or via script.
 
 ## Build Output
 
@@ -126,9 +142,8 @@ dist/
 ├── _astro/
 │   ├── (optimized CSS/JS bundles)
 │   └── (optimized images in AVIF/WebP formats)
-└── assets/
-    └── images/
-        └── (copied from src/assets/images)
+└── images/
+    └── (copied from public/images)
 ```
 
 ## Key Technologies
@@ -151,18 +166,19 @@ dist/
 | Masonry grid layout | Shows varied aspect ratios without cropping, modern portfolio aesthetic |
 | Separate admin/public config | Supports different environments (dev vs production) |
 | GitHub Actions deployment | Free, automated, integrates with existing repository |
+| Images in public/ not src/assets/ | Simpler URLs (/images/ vs /assets/images/), no build processing, matches CMS public_folder setting |
 
 ## Common Tasks
 
 ### Add a new category
 1. Create new JSON in `src/content/categories/{id}.json`
-2. Add cover image to `src/assets/images/categories/{id}/cover.jpg`
+2. Add cover image to `public/images/categories/{id}/cover.jpg`
 3. Category automatically appears in navigation
 
 ### Add a new album
-1. Create album directory in `src/assets/images/albums/{id}/`
+1. Create album directory in `public/images/albums/{id}/`
 2. Upload photos (cover.jpg, 001.jpg, 002.jpg, etc.)
-3. Create JSON in `src/content/albums/{id}.json`
+3. Create JSON in `src/content/albums/{id}.json` with image paths starting with `/images/albums/{id}/`
 4. Album automatically appears on homepage and category page
 
 ### Change site colors

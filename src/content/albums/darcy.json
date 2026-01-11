@@ -1,0 +1,11 @@
+{
+  "id": "darcy",
+  "title": "Дарси",
+  "category": "dogs",
+  "date": "2025-01-11",
+  "description": "Фото нашей Дарси",
+  "cover": "images/albums/darcy/cover.jpg",
+  "photos": [
+    "images/albums/darcy/001.jpg"
+  ]
+}

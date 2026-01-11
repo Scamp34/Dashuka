@@ -200,7 +200,7 @@ Required settings:
 **Albums** contain your photos:
 - Each album belongs to one category
 - Has a title, date, description, cover image, and photo collection
-- Photos are stored in `src/assets/images/albums/`
+- Photos are stored in `public/images/albums/`
 
 **Content Files** (JSON format):
 - Categories: `src/content/categories/{id}.json`
@@ -254,9 +254,11 @@ astro build --no-check
 
 **Solution**:
 1. Check image paths in content JSON files
-2. Ensure images exist in `src/assets/images/`
-3. Verify paths start with `/assets/images/`
-4. Check `public_folder` setting in `admin/config.yml`
+2. Ensure images exist in `public/images/`
+3. Verify paths start with `/images/`
+4. Check `public_folder` setting in `admin/config.yml` (should be `/images`)
+
+See `admin/README.md` for detailed CMS path configuration troubleshooting.
 
 ### CMS login fails
 
