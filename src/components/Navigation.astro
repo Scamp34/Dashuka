@@ -119,44 +119,51 @@ const currentPath = stripBase(Astro.url.pathname);
 <script>
 	const menuButton = document.getElementById('nav-menu-button') as HTMLButtonElement | null;
 	const menu = document.getElementById('nav-menu') as HTMLDivElement | null;
-	const line1 = document.getElementById('line1') as SVGLineElement | null;
-	const line2 = document.getElementById('line2') as SVGLineElement | null;
-	const line3 = document.getElementById('line3') as SVGLineElement | null;
+	const line1El = document.getElementById('line1') as SVGLineElement | null;
+	const line2El = document.getElementById('line2') as SVGLineElement | null;
+	const line3El = document.getElementById('line3') as SVGLineElement | null;
 
-	if (menuButton && menu && line1 && line2 && line3) {
+	if (menuButton && menu && line1El && line2El && line3El) {
 		const btn = menuButton;
 		const menuEl = menu;
+		const l1 = line1El;
+		const l2 = line2El;
+		const l3 = line3El;
 		let isOpen = false;
+
+		function setHamburger(): void {
+			l1.setAttribute('x1', '4');
+			l1.setAttribute('y1', '6');
+			l1.setAttribute('x2', '20');
+			l1.setAttribute('y2', '6');
+			l2.style.opacity = '1';
+			l3.setAttribute('x1', '4');
+			l3.setAttribute('y1', '18');
+			l3.setAttribute('x2', '20');
+			l3.setAttribute('y2', '18');
+		}
+
+		function setX(): void {
+			l1.setAttribute('x1', '6');
+			l1.setAttribute('y1', '6');
+			l1.setAttribute('x2', '18');
+			l1.setAttribute('y2', '18');
+			l2.style.opacity = '0';
+			l3.setAttribute('x1', '6');
+			l3.setAttribute('y1', '18');
+			l3.setAttribute('x2', '18');
+			l3.setAttribute('y2', '6');
+		}
 
 		function toggleMenu(): void {
 			isOpen = !isOpen;
 			
 			if (isOpen) {
-				// Open menu
 				menuEl.style.maxHeight = menuEl.scrollHeight + 'px';
-				// Transform hamburger to X
-				line1.setAttribute('x1', '6');
-				line1.setAttribute('y1', '6');
-				line1.setAttribute('x2', '18');
-				line1.setAttribute('y2', '18');
-				line2.style.opacity = '0';
-				line3.setAttribute('x1', '6');
-				line3.setAttribute('y1', '18');
-				line3.setAttribute('x2', '18');
-				line3.setAttribute('y2', '6');
+				setX();
 			} else {
-				// Close menu
 				menuEl.style.maxHeight = '0';
-				// Transform X back to hamburger
-				line1.setAttribute('x1', '4');
-				line1.setAttribute('y1', '6');
-				line1.setAttribute('x2', '20');
-				line1.setAttribute('y2', '6');
-				line2.style.opacity = '1';
-				line3.setAttribute('x1', '4');
-				line3.setAttribute('y1', '18');
-				line3.setAttribute('x2', '20');
-				line3.setAttribute('y2', '18');
+				setHamburger();
 			}
 			
 			btn.setAttribute('aria-expanded', isOpen.toString());
@@ -164,26 +171,16 @@ const currentPath = stripBase(Astro.url.pathname);
 
 		btn.addEventListener('click', toggleMenu);
 
-		// Close on Escape key
 		document.addEventListener('keydown', (e) => {
 			if (e.key === 'Escape' && isOpen) {
 				toggleMenu();
 			}
 		});
 
-		// Close menu on window resize to desktop
 		window.addEventListener('resize', () => {
 			if (window.innerWidth >= 768 && isOpen) {
 				menuEl.style.maxHeight = '0';
-				line1.setAttribute('x1', '4');
-				line1.setAttribute('y1', '6');
-				line1.setAttribute('x2', '20');
-				line1.setAttribute('y2', '6');
-				line2.style.opacity = '1';
-				line3.setAttribute('x1', '4');
-				line3.setAttribute('y1', '18');
-				line3.setAttribute('x2', '20');
-				line3.setAttribute('y2', '18');
+				setHamburger();
 				btn.setAttribute('aria-expanded', 'false');
 				isOpen = false;
 			}
