@@ -1,7 +1,7 @@
 ---
 // WHY Navigation.astro: Minimal navigation inspired by Peter Beavis
 // Fixed header with mix-blend-difference for elegant contrast
-import { withBase, stripBase, categoryUrl, homeUrl } from '../lib/urls';
+import { stripBase, categoryUrl, homeUrl } from '../lib/urls';
 
 const categories = Object.values(
   import.meta.glob('/src/content/categories/*.json', { eager: true })
@@ -118,36 +118,40 @@ const currentPath = stripBase(Astro.url.pathname);
 </nav>
 
 <script>
-	const menuButton = document.getElementById('nav-menu-button');
-	const menuClose = document.getElementById('nav-menu-close');
-	const menu = document.getElementById('nav-menu');
+	const menuButton = document.getElementById('nav-menu-button') as HTMLButtonElement | null;
+	const menuClose = document.getElementById('nav-menu-close') as HTMLButtonElement | null;
+	const menu = document.getElementById('nav-menu') as HTMLDivElement | null;
 
 	if (menuButton && menuClose && menu) {
-		function openMenu() {
-			menu.classList.remove('hidden');
-			menu.classList.add('flex');
+		const btn = menuButton;
+		const closeBtn = menuClose;
+		const menuEl = menu;
+
+		function openMenu(): void {
+			menuEl.classList.remove('hidden');
+			menuEl.classList.add('flex');
 			document.body.style.overflow = 'hidden';
-			menuButton.setAttribute('aria-expanded', 'true');
+			btn.setAttribute('aria-expanded', 'true');
 		}
 
-		function closeMenu() {
-			menu.classList.add('hidden');
-			menu.classList.remove('flex');
+		function closeMenu(): void {
+			menuEl.classList.add('hidden');
+			menuEl.classList.remove('flex');
 			document.body.style.overflow = '';
-			menuButton.setAttribute('aria-expanded', 'false');
+			btn.setAttribute('aria-expanded', 'false');
 		}
 
-		menuButton.addEventListener('click', openMenu);
-		menuClose.addEventListener('click', closeMenu);
+		btn.addEventListener('click', openMenu);
+		closeBtn.addEventListener('click', closeMenu);
 
 		// Close on link click
-		menu.querySelectorAll('a').forEach((link) => {
+		menuEl.querySelectorAll('a').forEach((link) => {
 			link.addEventListener('click', closeMenu);
 		});
 
 		// Close on Escape key
 		document.addEventListener('keydown', (e) => {
-			if (e.key === 'Escape' && !menu.classList.contains('hidden')) {
+			if (e.key === 'Escape' && !menuEl.classList.contains('hidden')) {
 				closeMenu();
 			}
 		});
