@@ -5,7 +5,7 @@ backend:
   name: github
   branch: main
   repo: Scamp34/Dashuka
-  # REQUIRED: Create GitHub OAuth App at https://github.com/settings/developers
+  client_id: Ov23liqo2FFyhlqbgFQp
   # Set these environment variables or replace with actual values:
   # base_url: https://github.com
   # auth_endpoint: oauth
