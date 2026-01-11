@@ -1,0 +1,103 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+// WHY [id].astro: Dynamic route for category pages with filtered albums
+// WHY getStaticPaths: Pre-render all category pages at build time
+
+export function getStaticPaths() {
+  // Load all categories to generate static paths (inside function to avoid scope issues)
+  const categoryModules = Object.values(
+    import.meta.glob('/src/content/categories/*.json', { eager: true })
+  );
+
+  return categoryModules.map((module: any) => ({
+    params: { id: module.default.id },
+    props: { category: module.default },
+  }));
+}
+
+const { category } = Astro.props;
+
+// Load all albums and filter by current category
+const albumModules = Object.values(
+  import.meta.glob('/src/content/albums/*.json', { eager: true })
+);
+
+// WHY filter: Only show albums belonging to this category
+const albums = albumModules
+  .map((module: any) => module.default)
+  .filter((album) => album.category === category.id)
+  // WHY sort by date desc: Show newest albums first
+  .sort((a, b) => b.date.localeCompare(a.date));
+---
+
+// WHY conditional render: Return 404 for non-existent categories
+{!category ? (
+  <Layout title="Category Not Found">
+    <div class="container mx-auto px-4 py-8">
+			<div class="max-w-7xl">
+				<h1 class="text-4xl font-bold mb-4">Category Not Found</h1>
+				<p class="text-text-secondary">
+					The requested category does not exist.
+				</p>
+			</div>
+		</div>
+  </Layout>
+) : (
+  <Layout title={`${category.title} - Portfolio`}>
+    <div class="container mx-auto px-4 py-8">
+			<div class="max-w-7xl">
+				<header class="mb-8">
+					<h1 class="text-4xl font-bold mb-2">{category.title}</h1>
+					{category.description && (
+						<p class="text-text-secondary mb-4">
+							{category.description}
+						</p>
+					)}
+					<p class="text-sm text-text-secondary">
+						{albums.length} {albums.length === 1 ? 'альбом' : albums.length < 5 ? 'альбома' : 'альбомов'}
+					</p>
+				</header>
+
+				{
+					albums.length > 0 ? (
+						<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+							{albums.map((album) => (
+								<div class="group relative overflow-hidden rounded-lg">
+									<a href={`/album/${album.id}`} class="block">
+										<div class="aspect-[4/3] overflow-hidden bg-white/5">
+											<img
+												src={album.cover}
+												alt={album.title}
+												class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+											/>
+										</div>
+
+										<div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
+											<h2 class="text-lg font-bold mb-1">
+												{album.title}
+											</h2>
+											<p class="text-sm text-text-secondary">
+												{new Date(album.date).toLocaleDateString('ru-RU', {
+													year: 'numeric',
+													month: 'long',
+													day: 'numeric',
+												})}
+											</p>
+										</div>
+									</a>
+								</div>
+							))}
+						</div>
+					) : (
+						<div class="text-center py-20">
+							<p class="text-text-secondary">
+								В этой категории пока нет альбомов.
+							</p>
+						</div>
+					)
+				}
+			</div>
+		</div>
+  </Layout>
+)}

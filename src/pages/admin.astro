@@ -1,0 +1,29 @@
+---
+// WHY admin.astro: Serves Decap CMS UI at /admin route
+// WHY client-side only: Decap CMS runs entirely in browser, no server-side code
+// WHY no layout: CMS has its own UI, independent from site layout
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="robots" content="noindex" />
+		<title>Content Manager - Portfolio</title>
+	</head>
+	<body>
+		<!-- WHY decap-cms from CDN: No build step required, works with static hosting -->
+		<!-- WHY version 3.x: Latest Decap CMS (formerly Netlify CMS) with GitHub OAuth support -->
+		<!-- WHY npm/unpkg CDN: Reliable CDN for npm packages, no installation needed -->
+		<script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+	</body>
+</html>
+
+<style>
+	/* WHY minimal styling: CMS provides its own UI, only basic page styles needed */
+	body {
+		margin: 0;
+		padding: 0;
+	}
+</style>

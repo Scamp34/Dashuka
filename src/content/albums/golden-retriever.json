@@ -1,0 +1,14 @@
+{
+  "id": "golden-retriever",
+  "title": "Золотистый ретривер",
+  "category": "dogs",
+  "date": "2024-06-15",
+  "description": "Фото нашего любимого золотистого ретривера",
+  "cover": "/assets/images/albums/golden-retriever/cover.jpg",
+  "photos": [
+    "/assets/images/albums/golden-retriever/001.jpg",
+    "/assets/images/albums/golden-retriever/002.jpg",
+    "/assets/images/albums/golden-retriever/003.jpg",
+    "/assets/images/albums/golden-retriever/004.jpg"
+  ]
+}

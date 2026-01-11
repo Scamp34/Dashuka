@@ -1,0 +1,14 @@
+{
+  "id": "sunset-beach",
+  "title": "Закат на пляже",
+  "category": "nature",
+  "date": "2024-10-05",
+  "description": "Магический закат на морском пляже",
+  "cover": "/assets/images/albums/sunset-beach/cover.jpg",
+  "photos": [
+    "/assets/images/albums/sunset-beach/001.jpg",
+    "/assets/images/albums/sunset-beach/002.jpg",
+    "/assets/images/albums/sunset-beach/003.jpg",
+    "/assets/images/albums/sunset-beach/004.jpg"
+  ]
+}

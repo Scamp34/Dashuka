@@ -1,0 +1,14 @@
+{
+  "id": "friends-park",
+  "title": "Друзья в парке",
+  "category": "people",
+  "date": "2024-09-15",
+  "description": "Вечерняя прогулка с друзьями в городском парке",
+  "cover": "/assets/images/albums/friends-park/cover.jpg",
+  "photos": [
+    "/assets/images/albums/friends-park/001.jpg",
+    "/assets/images/albums/friends-park/002.jpg",
+    "/assets/images/albums/friends-park/003.jpg",
+    "/assets/images/albums/friends-park/004.jpg"
+  ]
+}

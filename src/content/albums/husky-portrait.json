@@ -1,0 +1,13 @@
+{
+  "id": "husky-portrait",
+  "title": "Портрет хаски",
+  "category": "dogs",
+  "date": "2024-05-20",
+  "description": "Зимняя съемка хаски",
+  "cover": "/assets/images/albums/husky-portrait/cover.jpg",
+  "photos": [
+    "/assets/images/albums/husky-portrait/001.jpg",
+    "/assets/images/albums/husky-portrait/002.jpg",
+    "/assets/images/albums/husky-portrait/003.jpg"
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "id": "mountain-lake",
+  "title": "Горное озеро",
+  "category": "nature",
+  "date": "2024-08-10",
+  "description": "Поездка в горы",
+  "cover": "/assets/images/albums/mountain-lake/cover.jpg",
+  "photos": [
+    "/assets/images/albums/mountain-lake/001.jpg",
+    "/assets/images/albums/mountain-lake/002.jpg",
+    "/assets/images/albums/mountain-lake/003.jpg",
+    "/assets/images/albums/mountain-lake/004.jpg",
+    "/assets/images/albums/mountain-lake/005.jpg"
+  ]
+}

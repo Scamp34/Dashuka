@@ -1,0 +1,55 @@
+---
+// WHY PhotoGrid.astro: Masonry-style photo grid layout with lazy loading for album pages
+// WHY CSS columns: True masonry layout where items flow vertically like Pinterest
+// WHY lazy loading: Reduces initial page load, defers offscreen images until needed
+
+interface Props {
+	photos: string[];
+	// WHY albumTitle: Used for alt text accessibility
+	albumTitle: string;
+}
+
+const { photos, albumTitle } = Astro.props;
+
+// WHY responsiveColumns: Apply different column counts at breakpoints
+// Mobile: 1 column, Tablet (sm): 2 columns, Desktop (lg): 3 columns, Large (xl): 4 columns
+const responsiveColumns = 'columns-1 sm:columns-2 lg:columns-3 xl:columns-4';
+---
+
+<div class={`gap-4 space-y-4 ${responsiveColumns}`}>
+	{
+		photos.map((photo, index) => (
+			<div class="break-inside-avoid group relative overflow-hidden rounded-lg bg-white/5">
+				<!-- WHY loading="lazy": Defer loading offscreen images -->
+				<!-- WHY decoding="async": Prevents blocking main thread -->
+				<img
+					src={photo}
+					alt={`${albumTitle} - фото ${index + 1}`}
+					loading="lazy"
+					decoding="async"
+					data-index={index}
+					class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300 cursor-pointer"
+				/>
+			</div>
+		))
+	}
+</div>
+
+<!-- WHY inline script: Add click handlers for lightbox integration -->
+<script is:inline define:vars={{ photos }}>
+	// WHY CustomEvent: Allows passing data (photo index) between components
+	const handleClick = (index) => {
+		const event = new CustomEvent('open-lightbox', {
+			detail: { index, photos }
+		});
+		window.dispatchEvent(event);
+	};
+
+	// Attach click handlers to all images in this PhotoGrid
+	document.querySelectorAll('img[data-index]').forEach((img) => {
+		img.addEventListener('click', () => {
+			const index = parseInt(img.getAttribute('data-index') || '0');
+			handleClick(index);
+		});
+	});
+</script>

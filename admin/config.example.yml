@@ -1,0 +1,55 @@
+# Decap CMS Configuration Example
+# Copy this to config.yml and replace placeholders with your values
+
+backend:
+  name: github
+  branch: main
+  # REPLACE: Your GitHub username and repository name
+  repo: YOUR_USERNAME/portfolio-site
+  base_url: https://github.com
+  auth_endpoint: oauth
+  # REPLACE: Client ID from GitHub OAuth App (see DECAP_CMS_SETUP.md)
+  client_id: YOUR_GITHUB_CLIENT_ID
+  # Client secret should be set via environment variable for security
+  # For local dev: Create .env with DECAP_CMS_CLIENT_SECRET
+  # For GitHub Pages: Add DECAP_CMS_CLIENT_SECRET to repository secrets
+
+media_folder: "src/assets/images"
+public_folder: "/assets/images"
+
+collections:
+  - name: "albums"
+    label: "Albums"
+    label_singular: "Album"
+    description: "Photo albums organized by category"
+    folder: "src/content/albums"
+    create: true
+    identifier_field: "title"
+    slug: "{{slug}}"
+    fields:
+      - {label: "Title", name: "title", widget: "string", required: true}
+      - {label: "Category", name: "category", widget: "relation", collection: "categories", searchFields: ["title"], valueField: "title", displayFields: ["title"], required: true}
+      - {label: "Description", name: "description", widget: "text", required: false}
+      - {label: "Date", name: "date", widget: "datetime", date_format: "YYYY-MM-DD", time_format: false, required: true}
+      - {label: "Cover Image", name: "cover", widget: "image", required: true, hint: "Album cover image displayed on homepage"}
+      - label: "Photos"
+        name: "photos"
+        widget: "list"
+        summary: "{{fields.image}}"
+        field:
+          {label: "Image", name: "image", widget: "image", required: true}
+        required: true
+        hint: "Add multiple photos to the album"
+
+  - name: "categories"
+    label: "Categories"
+    label_singular: "Category"
+    description: "Photo categories (e.g., Dogs, People, Nature)"
+    folder: "src/content/categories"
+    create: true
+    identifier_field: "title"
+    slug: "{{slug}}"
+    fields:
+      - {label: "Title", name: "title", widget: "string", required: true}
+      - {label: "Description", name: "description", widget: "text", required: false}
+      - {label: "Cover Image", name: "cover", widget: "image", required: true, hint: "Category cover displayed in navigation"}

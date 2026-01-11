@@ -1,0 +1,133 @@
+---
+// WHY Navigation.astro: Category navigation menu for portfolio
+// Mobile: dropdown menu (<768px), Desktop: horizontal links (>=768px)
+// WHY horizontal on desktop: Reference Peter Beavis portfolio uses clean horizontal nav
+// WHY dropdown on mobile: Saves screen space, standard pattern for mobile navigation
+
+// Import categories for navigation links
+const categories = Object.values(
+  import.meta.glob('/src/content/categories/*.json', { eager: true })
+).map((module: any) => module.default);
+
+const currentPath = Astro.url.pathname;
+---
+
+<!-- WHY nav>ul>li structure: Semantic HTML for accessibility, screen readers understand navigation -->
+<nav class="border-b border-white/10 mb-8">
+	<div class="px-4 py-4">
+		<!-- Mobile dropdown button (hidden on desktop) -->
+		<!-- WHY md:hidden: Only show on mobile (<768px) -->
+		<button
+			id="nav-menu-button"
+			class="md:hidden flex items-center justify-between w-full py-2 text-text-primary hover:text-accent transition-colors"
+			aria-expanded="false"
+			aria-controls="nav-menu"
+		>
+			<span class="font-bold">Меню</span>
+			<!-- WHY hamburger icon: Standard mobile menu indicator -->
+			<svg
+				id="nav-menu-icon"
+				xmlns="http://www.w3.org/2000/svg"
+				width="24"
+				height="24"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				class="transition-transform duration-300"
+			>
+				<line x1="3" y1="12" x2="21" y2="12"></line>
+				<line x1="3" y1="6" x2="21" y2="6"></line>
+				<line x1="3" y1="18" x2="21" y2="18"></line>
+			</svg>
+		</button>
+
+		<!-- Navigation links -->
+		<!-- WHY md:flex: Show as horizontal flex on desktop, hidden by default on mobile -->
+		<!-- WHY flex-col on mobile: Stack links vertically in dropdown -->
+		<ul
+			id="nav-menu"
+			class="hidden md:flex flex-wrap gap-6 mt-4 md:mt-0 flex-col md:flex-row"
+		>
+			<li>
+				<!-- WHY whitespace-nowrap: Prevent category names from wrapping on mobile -->
+				<a
+					href="/"
+					class:text-accent={currentPath === '/'}
+					class:text-text-secondary={currentPath !== '/'}
+					class:font-bold={currentPath === '/'}
+					class="hover:text-accent transition-colors whitespace-nowrap block py-2 md:py-0"
+				>
+					Все
+				</a>
+			</li>
+			{
+				categories.map((category) => (
+					<li>
+						<a
+							href={`/category/${category.id}`}
+							class:text-accent={currentPath === `/category/${category.id}`}
+							class:text-text-secondary={currentPath !== `/category/${category.id}`}
+							class:font-bold={currentPath === `/category/${category.id}`}
+							class="hover:text-accent transition-colors whitespace-nowrap block py-2 md:py-0"
+						>
+							{category.title}
+						</a>
+					</li>
+				))
+			}
+		</ul>
+	</div>
+</nav>
+
+<script>
+	// WHY client-side script: Handle mobile dropdown toggle without page reload
+	const menuButton = document.getElementById('nav-menu-button')!;
+	const menuIcon = document.getElementById('nav-menu-icon')!;
+	const menu = document.getElementById('nav-menu')!;
+
+	let isMenuOpen = false;
+
+	function toggleMenu(): void {
+		isMenuOpen = !isMenuOpen;
+
+		// Toggle menu visibility
+		if (isMenuOpen) {
+			menu.classList.remove('hidden');
+			menu.classList.add('flex');
+			// Rotate icon to indicate open state
+			menuIcon.style.transform = 'rotate(180deg)';
+		} else {
+			menu.classList.add('hidden');
+			menu.classList.remove('flex');
+			menuIcon.style.transform = 'rotate(0deg)';
+		}
+
+		// Update ARIA attribute for accessibility
+		menuButton.setAttribute('aria-expanded', isMenuOpen.toString());
+	}
+
+	menuButton.addEventListener('click', toggleMenu);
+
+	// WHY close menu on link click: Auto-close after navigation on mobile
+	menu.querySelectorAll('a').forEach((link) => {
+		link.addEventListener('click', () => {
+			if (window.innerWidth < 768 && isMenuOpen) {
+				toggleMenu();
+			}
+		});
+	});
+
+	// WHY close menu on resize: Reset to desktop state when window expands
+	window.addEventListener('resize', () => {
+		if (window.innerWidth >= 768 && isMenuOpen) {
+			isMenuOpen = false;
+			menu.classList.remove('hidden');
+			menu.classList.add('flex');
+			menuIcon.style.transform = 'rotate(0deg)';
+			menuButton.setAttribute('aria-expanded', 'false');
+		}
+	});
+</script>
