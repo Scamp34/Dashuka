@@ -6,9 +6,14 @@ backend:
   branch: main
   repo: Scamp34/Dashuka
   client_id: Ov23liqo2FFyhlqbgFQp
-  # Set these environment variables or replace with actual values:
-  # base_url: https://github.com
-  # auth_endpoint: oauth
+  # WHY api_root: Explicit GitHub API endpoint
+  api_root: https://api.github.com
+  # WHY base_url: GitHub API endpoint for OAuth flow
+  base_url: https://github.com
+  # WHY auth_endpoint: Full OAuth authorization path
+  auth_endpoint: login/oauth/authorize
+  # WHY site_url: Required for GitHub Pages OAuth callback
+  site_url: https://scamp34.github.io/Dashuka
 
 # WHY media_folder in src/assets: Images stored in repo for version control
 # WHY public_folder: Public URL path for serving images
