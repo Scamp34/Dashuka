@@ -10,7 +10,8 @@ backend:
   base_url: https://github.com
   # WHY auth_endpoint: OAuth authorization path
   auth_endpoint: oauth
-  # WHY identity_url: Not using Netlify Identity - using GitHub OAuth directly
+  # WHY site_url: Required for GitHub Pages OAuth callback
+  site_url: https://scamp34.github.io/Dashuka
 
 # WHY media_folder in src/assets: Images stored in repo for version control
 # WHY public_folder: Public URL path for serving images
