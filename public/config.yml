@@ -1,0 +1,58 @@
+# Decap CMS Configuration for Photo Portfolio
+# WHY GitHub backend: Free OAuth authentication, version control for all content
+# WHY branch: main: Production branch where published content lives
+backend:
+  name: github
+  branch: main
+  repo: Scamp34/Dashuka
+  client_id: Ov23liqo2FFyhlqbgFQp
+  # Set these environment variables or replace with actual values:
+  # base_url: https://github.com
+  # auth_endpoint: oauth
+
+# WHY media_folder in src/assets: Images stored in repo for version control
+# WHY public_folder: Public URL path for serving images
+media_folder: "src/assets/images"
+public_folder: "/images"
+
+# WHY collections: Define content structures for albums and categories
+collections:
+  # WHY Albums collection: Main content type for photo galleries
+  - name: "albums"
+    label: "Albums"
+    label_singular: "Album"
+    description: "Photo albums organized by category"
+    folder: "src/content/albums"
+    create: true
+    # WHY identifier_field: Use filename as album ID for clean URLs
+    identifier_field: "title"
+    # WHY slug: Encode title as URL-friendly slug
+    slug: "{{slug}}"
+    fields:
+      - {label: "Title", name: "title", widget: "string", required: true}
+      - {label: "Category", name: "category", widget: "relation", collection: "categories", searchFields: ["title"], valueField: "title", displayFields: ["title"], required: true}
+      - {label: "Description", name: "description", widget: "text", required: false}
+      - {label: "Date", name: "date", widget: "datetime", date_format: "YYYY-MM-DD", time_format: false, required: true}
+      - {label: "Cover Image", name: "cover", widget: "image", required: true, hint: "Album cover image displayed on homepage"}
+      - label: "Photos"
+        name: "photos"
+        widget: "list"
+        summary: "{{fields.image}}"
+        field:
+          {label: "Image", name: "image", widget: "image", required: true}
+        required: true
+        hint: "Add multiple photos to the album"
+
+  # WHY Categories collection: Organizational structure for albums
+  - name: "categories"
+    label: "Categories"
+    label_singular: "Category"
+    description: "Photo categories (e.g., Dogs, People, Nature)"
+    folder: "src/content/categories"
+    create: true
+    identifier_field: "title"
+    slug: "{{slug}}"
+    fields:
+      - {label: "Title", name: "title", widget: "string", required: true}
+      - {label: "Description", name: "description", widget: "text", required: false}
+      - {label: "Cover Image", name: "cover", widget: "image", required: true, hint: "Category cover displayed in navigation"}
